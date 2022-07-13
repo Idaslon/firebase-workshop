@@ -1,6 +1,7 @@
-import { FormEvent, useCallback,  useMemo,  useState } from "react"
+// Wrong Way!!!
+
+import { FormEvent, useCallback, useEffect, useState } from "react"
 import { firestore } from "../services/firebase"
-import { useCollection } from 'react-firebase-hooks/firestore';
 
 type User = {
   id: string
@@ -17,8 +18,8 @@ function transformUser(user: any) {
 }
 
 function Index() {
+  const [users, setUsers] = useState<User[]>([])
   const [value, setValue] = useState('')
-  const [usersData, loading, error] = useCollection(firestore.collection('users'))
 
   const handleSubmit = useCallback(async(event: FormEvent) => {
     event.preventDefault()
@@ -29,24 +30,23 @@ function Index() {
   }, [value])
 
   const handleUpdateUser = useCallback(async (userId: string) => {
-    await firestore.doc(`/users/${userId}`).update({ name: 'Monkey' })
+    firestore.doc(`/users/${userId}`).update({ name: 'Monkey' })
   }, [])
 
   const handleDeleteUser = useCallback(async (userId: string) => {
-    await firestore.doc(`/users/${userId}`).delete()
+    firestore.doc(`/users/${userId}`).delete()
   }, [])
 
-  const users = useMemo(() => {
-    return usersData?.docs.map(transformUser)
-  }, [usersData])
+  useEffect(() => {
+    async function loadAndSetUsers() {
+      const response = await firestore.collection('users').get()
+      const listedUsers = response.docs.map(transformUser)
 
-  if (loading) {
-    return <h1>Loading</h1>
-  }
-  
-  if (error) {
-    return <h1>{`An error has ocurred: ${error.message}`}</h1>
-  }
+      setUsers(listedUsers)
+    }
+
+    loadAndSetUsers()
+  }, [])
 
   console.log(users);
   
@@ -61,7 +61,7 @@ function Index() {
       </form>
 
       <ul>
-        {users?.map(user => (
+        {users.map(user => (
           <li key={user.id}>
             {user.name}
 
