@@ -25,13 +25,13 @@ const EMULATORS_STARTED = 'EMULATORS_STARTED'
 
 // Comment the "if" to redirect to production
 
-// if (process.env.NODE_ENV === 'development' && !(global as any)[EMULATORS_STARTED]) {
-//   console.log('testing locally -- hitting local auth and firestore emulators');
-//   (global as any)[EMULATORS_STARTED] = true
-//   auth.useEmulator('http://localhost:9099/')
-//   firestore.useEmulator('localhost', 8080)
-//   functions.useEmulator('localhost', 5001)
-// }
+if (process.env.NODE_ENV === 'development' && !(global as any)[EMULATORS_STARTED]) {
+  console.log('testing locally -- hitting local auth and firestore emulators');
+  (global as any)[EMULATORS_STARTED] = true
+  auth.useEmulator('http://localhost:9099/')
+  firestore.useEmulator('localhost', 8080)
+  functions.useEmulator('localhost', 5001)
+}
 
 export {
   firebase,
