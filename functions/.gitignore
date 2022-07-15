@@ -10,3 +10,5 @@ node_modules/
 
 # Export data from firestore instance
 data/
+
+service-account.json

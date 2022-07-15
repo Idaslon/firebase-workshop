@@ -2,6 +2,10 @@ import { FormEvent, useCallback,  useMemo,  useState } from "react"
 import { firestore } from "../services/firebase"
 import { useCollection } from 'react-firebase-hooks/firestore';
 
+	
+import algoliasearch from 'algoliasearch/lite';
+import { InstantSearch, SearchBox, Hits } from 'react-instantsearch-dom';
+
 type User = {
   id: string
   name: string
@@ -15,6 +19,9 @@ function transformUser(user: any) {
 
   return formattedUser as User
 }
+
+// The right thing is use on .env
+const searchClient = algoliasearch('SDBXNFH1GW', '54c78d7836f1e689e9ba8e85c77ae524');
 
 function Index() {
   const [value, setValue] = useState('')
@@ -70,6 +77,12 @@ function Index() {
           </li>
         ))}
       </ul>
+
+      	
+      <InstantSearch searchClient={searchClient} indexName="users">
+        <SearchBox />
+        <Hits hitComponent={props => <div>{props.hit.name}</div>} />
+      </InstantSearch>
     </div>
   )
 }
